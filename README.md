@@ -25,7 +25,7 @@
 
 ---
 
-## 🛠️ 技術棧 (Tech Stack)
+##  技術棧 (Tech Stack)
 
 - **資料獲取 (Data Ingestion):** Python, Selenium, Requests, BeautifulSoup
 - **人工智慧 (AI/LLM):** Google Gemini Pro API
@@ -35,7 +35,7 @@
 
 ---
 
-## 📂 專案架構 (Project Structure)
+##  專案架構 (Project Structure)
 
 ```text
 ClassProject/
