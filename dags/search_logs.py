@@ -127,12 +127,13 @@ def main():
         return
 
     query_missing = """
-        SELECT KeywordID, Keyword 
-        FROM KeywordsMaster 
-        WHERE KeywordID NOT IN (
-            SELECT KeywordID 
-            FROM KeywordsLog 
-            WHERE Status = 'Success'
+        SELECT m.KeywordID, m.Keyword
+        FROM KeywordsMaster m
+        WHERE NOT EXISTS (
+            SELECT 1 
+            FROM KeywordsLog l 
+            WHERE l.KeywordID = m.KeywordID 
+              AND l.Status = 'Success'
         )
     """
     cursor.execute(query_missing)

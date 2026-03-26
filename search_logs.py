@@ -121,8 +121,12 @@ def main():
     query_missing = """
         SELECT m.KeywordID, m.Keyword
         FROM KeywordsMaster m
-        LEFT JOIN KeywordsLog l ON m.KeywordID = l.KeywordID
-        WHERE l.LogID IS NULL
+        WHERE NOT EXISTS (
+            SELECT 1 
+            FROM KeywordsLog l 
+            WHERE l.KeywordID = m.KeywordID 
+              AND l.Status = 'Success'
+        )
     """
     cursor.execute(query_missing)
     missing_keywords = cursor.fetchall()
