@@ -1,0 +1,15 @@
+# Web Scraping & Automation
+selenium>=4.18.0
+
+# Database Connectivity
+pyodbc>=5.1.0
+
+# Environment Variables Management
+python-dotenv>=1.0.1
+
+# Data Processing
+pandas>=2.2.1
+
+# API & HTTP Requests (For Gemini AI)
+requests>=2.31.0
+google-generativeai>=0.4.1

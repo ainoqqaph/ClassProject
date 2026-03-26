@@ -1,0 +1,66 @@
+# =========================
+# 1. 機密環境變數與設定檔 (Security / Secrets)
+# =========================
+.env
+*.env
+config.ini
+secrets.py
+api_keys.txt
+
+# =========================
+# 2. Python 虛擬環境與快取 (Python Environments & Cache)
+# =========================
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+dist/
+*.egg-info/
+.Python
+
+# =========================
+# 3. 日誌與暫存資料 (Logs & Temp Files)
+# =========================
+logs/
+**/logs/
+*.log
+fatal_errors.log
+database_errors.log
+keywords_master_errors.log
+keyword_region_stats_errors.log
+keywords_log_errors.log
+trends_errors.log
+*.bak
+*.backup
+
+# =========================
+# 4. 瀏覽器驅動程式 (WebDrivers)
+# =========================
+msedgedriver.exe
+msedgedriver
+chromedriver.exe
+geckodriver.exe
+*.exe
+
+# =========================
+# 5. 專案動態生成檔案 (Project Specific)
+# =========================
+dynamic_category_rules.json
+
+# =========================
+# 6. IDE 與作業系統暫存檔 (IDE & OS Files)
+# =========================
+.vscode/
+.vs/
+.idea/
+*.swp
+*.swo
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/

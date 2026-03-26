@@ -1,0 +1,125 @@
+﻿<Cube xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:ddl300="http://schemas.microsoft.com/analysisservices/2011/engine/300" xmlns:ddl300_300="http://schemas.microsoft.com/analysisservices/2011/engine/300/300" xmlns:ddl400="http://schemas.microsoft.com/analysisservices/2012/engine/400" xmlns:ddl400_400="http://schemas.microsoft.com/analysisservices/2012/engine/400/400" xmlns:ddl500="http://schemas.microsoft.com/analysisservices/2013/engine/500" xmlns:ddl500_500="http://schemas.microsoft.com/analysisservices/2013/engine/500/500" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0" dwd:design-time-name="89d797be-3728-46b1-acae-0dad65c73fdb" xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">
+  <ID>GoogleTrends</ID>
+  <MeasureGroups>
+    <MeasureGroup>
+      <ID>Fact Daily Trends</ID>
+      <Partitions>
+        <Partition dwd:design-time-name="49c3ef58-4bf5-4da4-878e-4fb79da19270">
+          <ID>Fact Daily Trends</ID>
+          <Name>Fact Daily Trends</Name>
+          <CreatedTimestamp>0001-01-01T00:00:00Z</CreatedTimestamp>
+          <LastSchemaUpdate>0001-01-01T00:00:00Z</LastSchemaUpdate>
+          <LastProcessed>0001-01-01T00:00:00Z</LastProcessed>
+          <State>Unprocessed</State>
+          <Source xsi:type="DsvTableBinding" dwd:design-time-name="b31ac60f-54d5-4d91-8d49-416c82d3e7ea">
+            <DataSourceViewID>GoogleTrendsDSV</DataSourceViewID>
+            <TableID>FactDailyTrends</TableID>
+          </Source>
+          <StorageMode>Molap</StorageMode>
+          <CurrentStorageMode>Molap</CurrentStorageMode>
+          <ProcessingMode>Regular</ProcessingMode>
+        </Partition>
+      </Partitions>
+    </MeasureGroup>
+    <MeasureGroup>
+      <ID>Fact Quality Metrics</ID>
+      <Partitions>
+        <Partition dwd:design-time-name="bb3b76b9-9cc4-474b-b16d-3de4fb5cde0d">
+          <ID>Fact Quality Metrics</ID>
+          <Name>Fact Quality Metrics</Name>
+          <CreatedTimestamp>0001-01-01T00:00:00Z</CreatedTimestamp>
+          <LastSchemaUpdate>0001-01-01T00:00:00Z</LastSchemaUpdate>
+          <LastProcessed>0001-01-01T00:00:00Z</LastProcessed>
+          <State>Unprocessed</State>
+          <Source xsi:type="DsvTableBinding" dwd:design-time-name="6307d54e-9156-463c-ad6e-d2e0236b98c0">
+            <DataSourceViewID>GoogleTrendsDSV</DataSourceViewID>
+            <TableID>FactQualityMetrics</TableID>
+          </Source>
+          <StorageMode>Molap</StorageMode>
+          <CurrentStorageMode>Molap</CurrentStorageMode>
+          <ProcessingMode>Regular</ProcessingMode>
+        </Partition>
+      </Partitions>
+    </MeasureGroup>
+    <MeasureGroup>
+      <ID>Fact Keyword Relations</ID>
+      <Partitions>
+        <Partition dwd:design-time-name="cb762798-43cc-455e-b876-dac24dade3b1">
+          <ID>Fact Keyword Relations</ID>
+          <Name>Fact Keyword Relations</Name>
+          <CreatedTimestamp>0001-01-01T00:00:00Z</CreatedTimestamp>
+          <LastSchemaUpdate>0001-01-01T00:00:00Z</LastSchemaUpdate>
+          <LastProcessed>0001-01-01T00:00:00Z</LastProcessed>
+          <State>Unprocessed</State>
+          <Source xsi:type="DsvTableBinding" dwd:design-time-name="b7246a3b-5318-46c5-8f21-d4cbe4bf6a6b">
+            <DataSourceViewID>GoogleTrendsDSV</DataSourceViewID>
+            <TableID>FactKeywordRelations</TableID>
+          </Source>
+          <StorageMode>Molap</StorageMode>
+          <CurrentStorageMode>Molap</CurrentStorageMode>
+          <ProcessingMode>Regular</ProcessingMode>
+        </Partition>
+      </Partitions>
+    </MeasureGroup>
+    <MeasureGroup>
+      <ID>Vw Quality Alerts</ID>
+      <Partitions>
+        <Partition dwd:design-time-name="525cf503-cfc3-4676-9b37-d2a7eabccf55">
+          <ID>Vw Quality Alerts</ID>
+          <Name>Vw Quality Alerts</Name>
+          <CreatedTimestamp>0001-01-01T00:00:00Z</CreatedTimestamp>
+          <LastSchemaUpdate>0001-01-01T00:00:00Z</LastSchemaUpdate>
+          <LastProcessed>0001-01-01T00:00:00Z</LastProcessed>
+          <State>Unprocessed</State>
+          <Source xsi:type="DsvTableBinding" dwd:design-time-name="dcfa0af4-d7ed-4900-80a8-e4028edea826">
+            <DataSourceViewID>GoogleTrendsDSV</DataSourceViewID>
+            <TableID>dbo_vw_QualityAlerts</TableID>
+          </Source>
+          <StorageMode>Molap</StorageMode>
+          <CurrentStorageMode>Molap</CurrentStorageMode>
+          <ProcessingMode>Regular</ProcessingMode>
+        </Partition>
+      </Partitions>
+    </MeasureGroup>
+    <MeasureGroup>
+      <ID>Vw Keyword Region Stats</ID>
+      <Partitions>
+        <Partition dwd:design-time-name="34313fe3-7ec5-4641-9766-9c756534cd49">
+          <ID>Vw Keyword Region Stats</ID>
+          <Name>Vw Keyword Region Stats</Name>
+          <CreatedTimestamp>0001-01-01T00:00:00Z</CreatedTimestamp>
+          <LastSchemaUpdate>0001-01-01T00:00:00Z</LastSchemaUpdate>
+          <LastProcessed>0001-01-01T00:00:00Z</LastProcessed>
+          <State>Unprocessed</State>
+          <Source xsi:type="DsvTableBinding" dwd:design-time-name="db75af75-7cdd-45e5-a92d-8b26d04ed007">
+            <DataSourceViewID>GoogleTrendsDSV</DataSourceViewID>
+            <TableID>dbo_vw_KeywordRegionStats</TableID>
+          </Source>
+          <StorageMode>Molap</StorageMode>
+          <CurrentStorageMode>Molap</CurrentStorageMode>
+          <ProcessingMode>Regular</ProcessingMode>
+        </Partition>
+      </Partitions>
+    </MeasureGroup>
+    <MeasureGroup>
+      <ID>Vw Keywords Log</ID>
+      <Partitions>
+        <Partition dwd:design-time-name="a650a086-697a-47ec-8749-8462678859e5">
+          <ID>Vw Keywords Log</ID>
+          <Name>Vw Keywords Log</Name>
+          <CreatedTimestamp>0001-01-01T00:00:00Z</CreatedTimestamp>
+          <LastSchemaUpdate>0001-01-01T00:00:00Z</LastSchemaUpdate>
+          <LastProcessed>0001-01-01T00:00:00Z</LastProcessed>
+          <State>Unprocessed</State>
+          <Source xsi:type="DsvTableBinding" dwd:design-time-name="d4a8ff85-b31c-4836-a729-d0f53a468d4c">
+            <DataSourceViewID>GoogleTrendsDSV</DataSourceViewID>
+            <TableID>dbo_vw_KeywordsLog</TableID>
+          </Source>
+          <StorageMode>Molap</StorageMode>
+          <CurrentStorageMode>Molap</CurrentStorageMode>
+          <ProcessingMode>Regular</ProcessingMode>
+        </Partition>
+      </Partitions>
+    </MeasureGroup>
+  </MeasureGroups>
+</Cube>

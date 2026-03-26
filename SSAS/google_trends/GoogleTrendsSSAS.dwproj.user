@@ -1,0 +1,30 @@
+<AnalysisServicesUserConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:ddl300="http://schemas.microsoft.com/analysisservices/2011/engine/300" xmlns:ddl300_300="http://schemas.microsoft.com/analysisservices/2011/engine/300/300" xmlns:ddl400="http://schemas.microsoft.com/analysisservices/2012/engine/400" xmlns:ddl400_400="http://schemas.microsoft.com/analysisservices/2012/engine/400/400" xmlns:ddl500="http://schemas.microsoft.com/analysisservices/2013/engine/500" xmlns:ddl500_500="http://schemas.microsoft.com/analysisservices/2013/engine/500/500" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0">
+  <Configurations>
+    <Configuration>
+      <Name>Development</Name>
+      <Options>
+        <UserIDs>
+          <ConfigurationSetting>
+            <Id>Microsoft RDB</Id>
+            <Name>Microsoft RDB</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAD3eaSxJRK0a5LFumZ4/24gAAAAAcAAAATQBpAGMAcgBvAHMAbwBmAHQAIABSAEQAQgAAABBmAAAAAQAAIAAAAApQTm0rrMcODzf3JbQ+x9F+pwG2mAQI0scV5aHlPYkWAAAAAA6AAAAAAgAAIAAAAOL7rIc1KKtNHjqRMw40jbe2mA0JPQo44tpHF/qjO8YtEAAAABuL+JzwvFA3UfECZ9oGU+FAAAAAOacUtgnONLR12jAceeiH8yBTm3MTzk/3lXhh0Wumn7HAPN8WmaXIr7CmIJJ7ctwQpw+pYCJ2kq+CLlhnuRxdgg==</Value>
+          </ConfigurationSetting>
+        </UserIDs>
+        <UserPasswords>
+          <ConfigurationSetting>
+            <Id>Microsoft RDB</Id>
+            <Name>Microsoft RDB</Name>
+            <Value xsi:type="xsd:string">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAD3eaSxJRK0a5LFumZ4/24gAAAAAcAAAATQBpAGMAcgBvAHMAbwBmAHQAIABSAEQAQgAAABBmAAAAAQAAIAAAAI609wijHj0x8DR0wLQ0GjiEEeQR5OoU+WcXfEmwZckVAAAAAA6AAAAAAgAAIAAAADVmLFWAcyZ0Q+m7mhx08ReePQMqjFW6XkcXK5bhQ8umIAAAAA6qPS106AfgnkIhFvtGbHYHm8y0j8i3GbOhDpFTBb2oQAAAADVkJ1hG2vi/e0Hq5q9EGIg24ODsKQTSnq2xGyT4mzvMWjd25Z3CLqVPbOo8XiWflvlthf+ppLaaeM0AvzVj3Ls=</Value>
+          </ConfigurationSetting>
+        </UserPasswords>
+        <TargetServer>localhost</TargetServer>
+        <TargetDatabase>GoogleTrendsSSAS</TargetDatabase>
+        <StartObject>
+          <ObjectId></ObjectId>
+          <ObjectType>Current</ObjectType>
+        </StartObject>
+        <TransactionalDeployment>true</TransactionalDeployment>
+      </Options>
+    </Configuration>
+  </Configurations>
+</AnalysisServicesUserConfiguration>
