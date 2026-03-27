@@ -95,6 +95,7 @@ services:
   airflow-worker:
     <<: *airflow-common
     command: celery worker
+    shm_size: '2g'
     healthcheck:
       test: ["CMD-SHELL", 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"']
       interval: 30s
@@ -141,7 +142,7 @@ services:
       _AIRFLOW_WWW_USER_CREATE: 'true'
       _AIRFLOW_WWW_USER_USERNAME: 'airflow'
       _AIRFLOW_WWW_USER_PASSWORD: 'airflow'
-    user: "0:0"
+    user: "50000:0"
 
 volumes:
   postgres-db-volume:

@@ -44,7 +44,7 @@ with DAG(
         bash_command=f'cd {SCRIPT_DIR} && python Aikeyword.py',
     )
 
-    # Task 3: 執行摘要補抓程式 (精準補齊 Bing 新聞摘要)
+    # Task 3: 執行摘要補抓程式
     t3_run_log_backfill = BashOperator(
         task_id='task3_search_log_backfill',
         bash_command=f'cd {SCRIPT_DIR} && python search_logs.py',
