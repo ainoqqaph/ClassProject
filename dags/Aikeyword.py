@@ -129,7 +129,7 @@ def run_auto_learner():
     conn = connect_db()
     cursor = conn.cursor()
     try:
-        #4: 涵蓋 NULL 狀態的防呆檢查
+        #4: 防呆檢查
         cursor.execute("SELECT COUNT(*) FROM KeywordsMaster WHERE Category = 'Other' OR Category IS NULL")
         total_other = cursor.fetchone()[0]
         logger.info(f"資料庫中共有 {total_other} 個 'Other' 或 'NULL' 詞彙需要學習。")
@@ -176,12 +176,12 @@ def run_auto_learner():
         if updated_count > 0:
             with open(RULES_FILE, 'w', encoding='utf-8') as f: 
                 json.dump(rules, f, ensure_ascii=False, indent=4)
-            logger.info(f"✅ 規則檔已擴充 {updated_count} 個新詞彙。")
+            logger.info(f"規則檔已擴充 {updated_count} 個新詞彙。")
 
         if db_updates:
             cursor.executemany("UPDATE KeywordsMaster SET Category = ? WHERE KeywordID = ?", db_updates)
             conn.commit()
-            logger.info(f"✅ 資料庫已成功導正 {len(db_updates)} 筆分類。")
+            logger.info(f"資料庫已成功導正 {len(db_updates)} 筆分類。")
         else:
             logger.info("本次執行未發現可明確歸類的新詞彙。")
 
