@@ -1,4 +1,4 @@
-# 自動化跨國市場關鍵字抓取
+# 跨國市場關鍵字抓取
 > Enterprise End-to-End Data Pipeline & AI-Driven Market Intelligence Dashboard
 
 本專案為一套完整的「端到端 (End-to-End)」數據工程與商業分析解決方案。透過自動化爬蟲獲取跨國 Google Trends 熱搜數據，導入 Google Gemini AI 進行語意分析與商業標籤賦能，並經由 Apache Airflow 自動化排程，最終存入 SQL Server 資料倉儲，透過 Power BI 呈現。
