@@ -7,7 +7,7 @@
 - 於 Linux Docker 環境建置爬蟲。
 - 透過關閉圖片加載與阻擋不必要之 JS 腳本，大幅降低 Docker 記憶體消耗。
 
-### 2. AI 賦能數據治理 (AI Semantic Tagging)
+### 2. AI輔助分類 (AI Semantic Tagging)
 - 整合 **Google Gemini API**，將生硬且非結構化的熱搜關鍵字，自動判定並賦予「商業意圖 (Search Intent)」與「產業分類 (Category)」。
 - 具備自我學習機制的 `dynamic_category_rules.json`，能隨著爬取次數增加，自動擴充並完善分類規則字典。
 
@@ -15,7 +15,7 @@
 - 遵循 **星狀模型 (Star Schema)** 設計關聯式資料庫 (SQL Server)。
 - 實作 **Append-Only 日誌模式** 進行資料補抓，保留完整的爬蟲歷史軌跡 (Audit Trail)。
 
-### 4. 全自動化排程管線 (Workflow Orchestration)
+### 4. 自動化排程管線 (Workflow Orchestration)
 - 使用 **Apache Airflow** 建立有向無環圖 (DAG)。
 - 將流程拆解為 `抓取最新熱搜 ➔ AI 語意分類學習 ➔ 失敗摘要補抓` 的標準化 ETL 流水線，實現每日自動化排程與監控。
 
