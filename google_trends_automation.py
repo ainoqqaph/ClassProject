@@ -929,7 +929,7 @@ class Crawler:
                     query = f"SELECT Keyword, KeywordID FROM KeywordsMaster WHERE Keyword IN ({placeholders})"
                     cursor.execute(query, chunk)
                     for row in cursor.fetchall():
-                        existing_keywords[row[0]] = int(row[1])
+                        existing_keywords[row[0].lower()] = int(row[1])
             
             cursor.execute("SELECT ISNULL(MAX(KeywordID), 0) FROM KeywordsMaster WITH (UPDLOCK, SERIALIZABLE)")
             current_max_id = int(cursor.fetchone()[0])
@@ -943,8 +943,8 @@ class Crawler:
                 cat = data.get('category', 'Other') or 'Other'
                 intent = data.get('search_intent', 'Informational') or 'Informational'
 
-                if kw in existing_keywords:
-                    kid = existing_keywords[kw]
+                if kw.lower() in existing_keywords:
+                    kid = existing_keywords[kw.lower()]
                     keyword_id_map[kw] = kid
                     if kid not in updated_kids:
                         update_params.append((cat, intent, kid))

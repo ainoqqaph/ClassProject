@@ -255,18 +255,25 @@ def convert_search_volume_to_number(volume_text):
         return None
 
 def force_cleanup_browser_processes():
-    """【Airflow 專用】強制清理系統中殘留的 Edge 與 WebDriver 處理程序"""
+    """【Airflow 專用】強制清理系統中殘留的瀏覽器與 WebDriver 處理程序"""
     print(f"\n{'=' * 60}")
-    print("[INFO] 執行系統級清理：尋找並終止殘留的 Edge 處理程序...")
+    print("[INFO] 執行系統級清理：尋找並終止殘留的 Chrome/Edge 處理程序...")
     killed_count = 0
     try:
         # 掃描所有執行中的程序
         for proc in psutil.process_iter(['pid', 'name']):
             try:
                 process_name = proc.info['name'].lower()
-                # 鎖定 Edge 瀏覽器與驅動程式
-                if process_name in ['chrome', 'chromedriver', 'chromium']:
-                    proc.kill()  # 無情擊殺
+                # 鎖定瀏覽器與驅動程式
+                clean_name = process_name.replace('.exe', '')
+              
+                target_processes = [
+                    'chrome', 'chromedriver', 'chromium', # Chrome 家族
+                    'msedge', 'msedgedriver', 'edge'      # Edge 家族
+                ]
+                
+                if clean_name in target_processes:
+                    proc.kill()  
                     killed_count += 1
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 pass
@@ -953,7 +960,7 @@ class Crawler:
                     query = f"SELECT Keyword, KeywordID FROM KeywordsMaster WHERE Keyword IN ({placeholders})"
                     cursor.execute(query, chunk)
                     for row in cursor.fetchall():
-                        existing_keywords[row[0]] = int(row[1])
+                        existing_keywords[row[0].lower()] = int(row[1])
             cursor.execute("SELECT ISNULL(MAX(KeywordID), 0) FROM KeywordsMaster WITH (UPDLOCK, SERIALIZABLE)")
             current_max_id = int(cursor.fetchone()[0])
             
@@ -967,9 +974,9 @@ class Crawler:
                 cat = data.get('category', 'Other') or 'Other'
                 intent = data.get('search_intent', 'Informational') or 'Informational'
 
-                if kw in existing_keywords:
+                if kw.lower() in existing_keywords:
                     # 已存在：準備更新
-                    kid = existing_keywords[kw]
+                    kid = existing_keywords[kw.lower()]
                     keyword_id_map[kw] = kid
                     if kid not in updated_kids:
                         update_params.append((cat, intent, kid))
