@@ -289,14 +289,10 @@ def force_cleanup_browser_processes():
 # ==================== 分類函式 ====================
 
 def classify_keyword_by_rules(keyword):
-    """規則式分類 (AI 失敗時的 Fallback 安全氣囊)"""
-    # 將關鍵字轉小寫，方便英文比對
-    kw_lower = keyword.lower()
- 
-    # 1. 判斷搜尋意圖 (Search Intent)
-   
-    intent = "Informational" 
+    """規則式分類 (AI 失敗時的 Fallback)"""
     
+    kw_lower = keyword.lower()
+    intent = "Informational" 
     # 交易型
     if any(word in kw_lower for word in ['buy', 'price', 'cheap', 'discount', 'order', '買', '價格', '便宜', '折扣', '預購', '特價', '哪裡買']):
         intent = "Transactional"
@@ -306,11 +302,8 @@ def classify_keyword_by_rules(keyword):
     # 導航型
     elif any(word in kw_lower for word in ['login', 'official', 'www', '官網', '登入', '客服', '下載']):
         intent = "Navigational"
-
-    # 2. 判斷產業分類 (Category)
     
     category = "Other"  
-    
     # 商業與金融 (含金量最高)
     if any(word in kw_lower for word in ['stock', 'market', 'bank', 'finance', '股票', '股市', '銀行', '投資', '匯率', '台積電', 'ETF']):
         category = "Business"
@@ -328,9 +321,7 @@ def classify_keyword_by_rules(keyword):
         category = "News"
     # 生活風格
     elif any(word in kw_lower for word in ['recipe', 'food', 'travel', 'hotel', '食譜', '旅遊', '飯店', '美食', '餐廳']):
-        category = "Lifestyle"
-  
-    # 3. 回傳格式 
+        category = "Lifestyle" 
     
     return {
         'category': category,
