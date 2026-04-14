@@ -1,0 +1,96 @@
+{
+    "Technology": [
+        "AI",
+        "iPhone",
+        "Android",
+        "Tesla",
+        "Apple",
+        "Google",
+        "Microsoft",
+        "ChatGPT",
+        "Claude",
+        "Midjourney",
+        "Sora",
+        "LLM"
+        
+    ],
+    "Entertainment": [
+        "Netflix",
+        "YouTube",
+        "movie",
+        "music",
+        "concert",
+        "game",
+        "entertainment"
+        
+    ],
+    "Politics": [
+        "election",
+        "president",
+        "trump",
+        "biden",
+        "harris",
+        "congress",
+        "parliament",
+        "senate",
+        "minister",
+        "democrat",
+        "republican",
+        "vote",
+        "debate"
+    ],
+    "News": [
+        "news",
+        "breaking",
+        "earthquake",
+        "typhoon",
+        "hurricane",
+        "tsunami",
+        "shooting",
+        "protest",
+        "strike",
+        "outage",
+        "war",
+        "israel"
+    ],
+    "Sports": [
+        "Premier League",
+        "Champions League",
+        "FIFA",
+        "Olympics",
+        "Messi",
+        "Ronaldo",
+        "LeBron",
+        "Curry",
+        "grizzlies vs hornets"
+    ],
+    "Business": [
+        "share price",
+        "dividend",
+        "earnings",
+        "inflation",
+        "CPI"
+    ],
+    "Health": [
+        "health",
+        "COVID",
+        "outbreak"
+    ],
+    "Education": [
+        "dse",
+        "sat",
+        "university",
+        "college",
+        "student",
+        "science"
+    ],
+    "Lifestyle": [
+        "Starbucks",
+        "麥當勞",
+        "McDonald",
+        "recipe",
+        "火鍋",
+        "燒烤"
+    ],
+    "Other": []
+}
