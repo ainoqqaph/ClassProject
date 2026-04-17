@@ -28,7 +28,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-# 確保 stdout/stderr 強制使用 UTF-8
+
 if hasattr(sys.stdout, 'buffer'):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
@@ -64,7 +64,6 @@ class DualLogger:
             self.original_stream.flush()
             self.log_file.flush()
 
-# 攔截並替換系統的標準輸出 (stdout) 與錯誤輸出 (stderr)
 sys.stdout = DualLogger(sys.stdout, LOG_FILE)
 sys.stderr = DualLogger(sys.stderr, LOG_FILE)
 
@@ -96,8 +95,6 @@ RULES_FILE = os.path.join(BASE_DIR, "dynamic_category_rules.json")
 
 # ==================== 3. 爬蟲與 AI 分類設定 ====================
 
-
-# Google Trends 地區設定
 REGIONS = [
     {"code": "US", "name": "美國", "url": "https://trends.google.com.tw/trending?geo=US"},
     {"code": "AU", "name": "澳洲", "url": "https://trends.google.com.tw/trending?geo=AU"},
@@ -117,24 +114,22 @@ AFTER_KEYWORD_MAX = 15
 MAX_RETRIES = 3
 INITIAL_BACKOFF = 2
 
-SCRAPE_MAX_RETRIES = 2  # 每個地區最多重試次數
-SCRAPE_RETRY_DELAY = 10  # 重試間隔（秒）
-PAGE_LOAD_TIMEOUT = 30  # 頁面載入超時（秒）
-ELEMENT_WAIT_TIME = 8  # 元素等待時間（秒）
-DEBUG_MODE = True  # 啟用 DEBUG 模式
+SCRAPE_MAX_RETRIES = 2  
+SCRAPE_RETRY_DELAY = 10  
+PAGE_LOAD_TIMEOUT = 30  
+ELEMENT_WAIT_TIME = 8  
+DEBUG_MODE = True 
 
-# AI 處理設定
-USE_AI_CLASSIFICATION = True  # 是否啟用 AI 分類
-AI_BATCH_SIZE = 50            # 批次交給 AI 處理的數量上限
+USE_AI_CLASSIFICATION = True  
+AI_BATCH_SIZE = 50            
 
-# 規則式分類設定
+
 # ==================== 動態規則載入模組 ====================
 
 
 def load_category_rules():
     """從 JSON 檔案動態載入分類規則，若無則自動建立初始基礎版"""
     if not os.path.exists(RULES_FILE):
-        # 精簡版的基礎規則，後續將由 Aikeyword.py 自動學習並擴充至 JSON 內
         initial_rules = {
             'Technology': ['AI', 'iPhone', 'Android', '科技', '電腦', '手機', '軟體', '硬體'],
             'Entertainment': ['電影', '音樂', '遊戲', '動漫', 'movie', 'music', 'game'],
@@ -154,7 +149,6 @@ def load_category_rules():
     with open(RULES_FILE, 'r', encoding='utf-8') as f:
         return json.load(f)
 
-# 載入動態規則
 CATEGORY_RULES = load_category_rules()
 
 SEARCH_INTENT_RULES = {
@@ -197,19 +191,12 @@ def retry_with_backoff(func, max_retries=MAX_RETRIES, initial_backoff=INITIAL_BA
 def log_error(filename, message):
     """統一的錯誤日誌寫入函式 (支援動態日期與集中管理)"""
     try:
-        # 1. 確保 logs 資料夾存在
         log_dir = os.path.join(BASE_DIR, "logs")
         if not os.path.exists(log_dir):
-            os.makedirs(log_dir)
-            
-        # 2. 取得當天日期
-        today_str = datetime.now().strftime("%Y-%m-%d")
-        
-        # 3. 分離原始檔名與副檔名 (例如把 "fatal_errors.log" 變成 "fatal_errors_2026-03-21.log")
+            os.makedirs(log_dir)           
+        today_str = datetime.now().strftime("%Y-%m-%d")       
         name, ext = os.path.splitext(filename)
         daily_filename = f"{name}_{today_str}{ext}"
-        
-        # 4. 組合成完整路徑
         full_path = os.path.join(log_dir, daily_filename)
         
         with open(full_path, "a", encoding="utf-8") as f:
@@ -255,21 +242,17 @@ def convert_search_volume_to_number(volume_text):
         return None
 
 def force_cleanup_browser_processes():
-    """【Airflow 專用】強制清理系統中殘留的瀏覽器與 WebDriver 處理程序"""
     print(f"\n{'=' * 60}")
-    print("[INFO] 執行系統級清理：尋找並終止殘留的 Chrome/Edge 處理程序...")
+    print("執行系統級清理：尋找並終止殘留的 Chrome/Edge 處理程序...")
     killed_count = 0
     try:
-        # 掃描所有執行中的程序
         for proc in psutil.process_iter(['pid', 'name']):
             try:
                 process_name = proc.info['name'].lower()
-                # 鎖定瀏覽器與驅動程式
                 clean_name = process_name.replace('.exe', '')
-              
                 target_processes = [
-                    'chrome', 'chromedriver', 'chromium', # Chrome 家族
-                    'msedge', 'msedgedriver', 'edge'      # Edge 家族
+                    'chrome', 'chromedriver', 'chromium', 
+                    'msedge', 'msedgedriver', 'edge'      
                 ]
                 
                 if clean_name in target_processes:
@@ -279,17 +262,16 @@ def force_cleanup_browser_processes():
                 pass
                 
         if killed_count > 0:
-            print(f"[INFO] 成功清理 {killed_count} 個殘留的殭屍程序。")
+            print(f"成功清理 {killed_count} 個殘留的殭屍程序。")
         else:
-            print("[INFO] 系統環境乾淨，無殘留程序。")
+            print("系統環境乾淨，無殘留程序。")
     except Exception as e:
-        print(f"[WARNING] 清理程序時發生異常 (可忽略): {e}")
+        print(f"清理程序時發生異常 (可忽略): {e}")
     print(f"{'=' * 60}\n")
 
 # ==================== 分類函式 ====================
 
 def classify_keyword_by_rules(keyword):
-    """規則式分類 (AI 失敗時的 Fallback)"""
     
     kw_lower = keyword.lower()
     intent = "Informational" 
@@ -304,7 +286,7 @@ def classify_keyword_by_rules(keyword):
         intent = "Navigational"
     
     category = "Other"  
-    # 商業與金融 (含金量最高)
+    # 商業與金融
     if any(word in kw_lower for word in ['stock', 'market', 'bank', 'finance', '股票', '股市', '銀行', '投資', '匯率', '台積電', 'ETF']):
         category = "Business"
     # 科技與3C
@@ -329,7 +311,6 @@ def classify_keyword_by_rules(keyword):
         'english_translation': keyword  
     }
 def classify_keywords_batch(keywords_list):
-    """分類關鍵字 (保留詳細指令與解決格式報錯)"""
     global CURRENT_API_KEY_INDEX
     if not keywords_list: return {}
 
@@ -378,7 +359,6 @@ SearchIntent 可選：
             rebuilt_dict = {}
             if isinstance(ai_data, list):
                 for item in ai_data:
-                    # 強制轉字串並清理
                     k = str(item.get('keyword') or next(iter(item.values()))).strip()
                     rebuilt_dict[k] = item
             elif isinstance(ai_data, dict):
@@ -389,7 +369,7 @@ SearchIntent 可選：
             debug_print(f"解析 AI JSON 失敗: {e}", "ERROR")
             return {}
 
-    # --- 引擎 1：Vertex AI (2.5) ---
+    # --- Vertex AI (2.5) ---
     if VERTEX_AI_KEY:
         try:
             url = f"https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash-lite:generateContent?key={VERTEX_AI_KEY}"
@@ -399,7 +379,7 @@ SearchIntent 可選：
                 if result: return result
         except: pass
 
-    # --- 引擎 2：金鑰輪替 (2.0) ---
+    # --- 金鑰輪替 (2.0) ---
     for _ in range(len(GEMINI_API_KEYS) * 2):
         key = GEMINI_API_KEYS[CURRENT_API_KEY_INDEX]
         try:
@@ -487,8 +467,6 @@ class DataQualityMonitor:
             print("=" * 60)
 
             cursor = self.conn.cursor()
-
-            # 加入 SET NOCOUNT ON 防止「受影響資料列」訊息干擾結果集讀取
             sql_command = """
                 SET NOCOUNT ON;
                 DECLARE @NewID INT;
@@ -500,8 +478,6 @@ class DataQualityMonitor:
             """
             
             cursor.execute(sql_command, crawler_version, python_version)
-            
-            # 迴圈切換結果集，直到找到包含 @NewID 的查詢結果
             self.current_execution_id = None
             while True:
                 try:
@@ -510,7 +486,6 @@ class DataQualityMonitor:
                         self.current_execution_id = row[0]
                         break
                 except pyodbc.Error:
-                    # 如果當前結果集不是查詢（例如 PRINT 訊息），跳過
                     pass
                 
                 if not cursor.nextset():
@@ -584,7 +559,6 @@ class DataQualityMonitor:
                 print(f"日期: {check_date}")
             print("=" * 60)
 
-            # 增強版品質檢查
             try:
                 cursor.execute("""
                     SET NOCOUNT ON;
@@ -594,7 +568,6 @@ class DataQualityMonitor:
                         @EnableAlert = ?
                 """, check_date, region_id, 1 if enable_alert else 0)
             except Exception as e:
-                # Fallback 到基礎版
                 print(f" [DEBUG] 增強版 SP 失敗，嘗試基礎版... 錯誤: {e}")
                 cursor.execute("""
                     SET NOCOUNT ON;
@@ -603,7 +576,6 @@ class DataQualityMonitor:
                         @RegionID = ?
                 """, check_date, region_id)
 
-            # 取得品質結果
             row = cursor.fetchone()
             result = None
 
@@ -629,7 +601,6 @@ class DataQualityMonitor:
                 print(f"總關鍵字: {result['total_keywords']}")
                 print(f"完整性: 搜尋量 {result['volume_completeness']:.1f}%, 排名 {result['rank_completeness']:.1f}%")
 
-                # 擷取下一個結果集（告警訊息）
                 try:
                     if cursor.nextset():
                         alerts = cursor.fetchall()
@@ -673,7 +644,6 @@ class KeywordRelationAnalyzer:
 
             cursor = self.conn.cursor()
 
-            # 直接呼叫關聯詞分析
             cursor.execute("""
                 EXEC dbo.usp_CalculateCoOccurrence
                     @CalculateDate = ?
@@ -681,7 +651,6 @@ class KeywordRelationAnalyzer:
 
             debug_print("使用共現計算 SP", "DEBUG")
 
-            # 消耗所有結果集
             while cursor.nextset():
                 pass
 
@@ -716,7 +685,7 @@ class KeywordRelationAnalyzer:
             return True
 
         except Exception as e:
-            print(f"✗ 更新共現分數失敗: {e}")
+            print(f" 更新共現分數失敗: {e}")
             traceback.print_exc()
             try:
                 self.conn.rollback()
@@ -741,7 +710,6 @@ class Crawler:
     def connect_db(self):
         """連接 SQL Server"""
         try:
-            # 1. 從環境變數抓取帳號密碼，並賦值給變數
             db_user = os.getenv("DB_USER")
             db_password = os.getenv("DB_PASSWORD")
 
@@ -758,42 +726,41 @@ class Crawler:
             )
             
             self.conn = pyodbc.connect(conn_str, autocommit=False)
-            print(f"[INFO] Connected to SQL Server via SQL Auth (User: {db_user})")
+            print(f"Connected to SQL Server via SQL Auth (User: {db_user})")
             cursor = self.conn.cursor()
             cursor.execute("SELECT GETDATE()")
             current_time = cursor.fetchone()[0]
-            print(f"[INFO] Database current time: {current_time}")
+            print(f"Database current time: {current_time}")
 
             self.load_region_ids()
             self.snapshot_manager = DailySnapshotManager(self.conn)
-            print(f"[INFO] 時間序列模組已載入")
+            print(f"時間序列模組已載入")
             self.quality_monitor = DataQualityMonitor(self.conn)
-            print(f"[INFO] 數據質量監控模組已載入")
+            print(f"數據質量監控模組已載入")
             self.relation_analyzer = KeywordRelationAnalyzer(self.conn)
-            print(f"[INFO] 關聯詞分析模組已載入")
+            print(f"關聯詞分析模組已載入")
 
         except Exception as e:
-            print(f"[FATAL ERROR] Failed to connect to SQL Server: {e}")
+            print(f"Failed to connect to SQL Server: {e}")
             raise
 
     def load_region_ids(self):
-        """載入地區 ID 對應表"""
+        
         try:
             cursor = self.conn.cursor()
             cursor.execute("SELECT RegionID, RegionCode FROM RegionsMaster")
             for row in cursor.fetchall():
                 self.region_id_map[row[1]] = row[0]
-            print(f"[INFO] Loaded {len(self.region_id_map)} regions")
+            print(f"Loaded {len(self.region_id_map)} regions")
         except Exception as e:
             print(f"[ERROR] Failed to load region IDs: {e}")
             raise
 
     def init_driver(self):
-        """初始化 Chromium WebDriver (Docker Linux 專用版)"""
+        
         try:
-            print(f"[INFO] Initializing Chromium WebDriver (Headless Mode)...")
+            print(f"Initializing Chromium WebDriver (Headless Mode)...")
             
-            # 1. 指向 Dockerfile 安裝的 Linux 驅動
             driver_path = "/usr/bin/chromedriver"
             
             options = webdriver.ChromeOptions()  
@@ -809,31 +776,28 @@ class Crawler:
             options.add_argument(f"--user-data-dir={self.profile_path}")
 
             service = Service(driver_path)
-            
-            # 4. 啟動
             self.driver = webdriver.Chrome(service=service, options=options)
             self.driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
             
-            print(f"[INFO] Linux Chromium WebDriver initialized successfully")
+            print(f"Linux Chromium WebDriver initialized successfully")
             
         except Exception as e:
-            print(f"[FATAL ERROR] Failed to initialize WebDriver: {e}")
+            print(f"Failed to initialize WebDriver: {e}")
             traceback.print_exc()
             sys.exit(1)
 
     def close(self):
-        """關閉瀏覽器，清理處理程序"""
         driver_pid = None
         
         if self.driver:
             try:
                 driver_pid = self.driver.service.process.pid
-                print(f"[INFO] Closing browser (Driver PID: {driver_pid})...")
+                print(f"Closing browser (Driver PID: {driver_pid})...")
                 
                 self.driver.quit()
-                print(f"[INFO] WebDriver session terminated elegantly.")
+                print(f"WebDriver session terminated elegantly.")
             except Exception as e:
-                print(f"[ERROR] Error during normal quit(): {e}")
+                print(f"Error during normal quit(): {e}")
             finally:
                 
                 if driver_pid:
@@ -851,30 +815,30 @@ class Crawler:
                             parent.kill() 
                         except psutil.NoSuchProcess:
                             pass
-                        print(f"[INFO] Zombie processes strictly cleaned up for PID {driver_pid}.")
+                        print(f"Zombie processes strictly cleaned up for PID {driver_pid}.")
                         
                     except psutil.NoSuchProcess:
                         pass
                     except Exception as clean_err:
-                        print(f"[ERROR] Process cleanup error: {clean_err}")
+                        print(f"Process cleanup error: {clean_err}")
 
         if self.profile_path and os.path.exists(self.profile_path):
             try:
                 time.sleep(2)
                 shutil.rmtree(self.profile_path, ignore_errors=True)
-                print(f"[INFO] 暫存 Profile 清理完成 ({self.profile_path})")
+                print(f"暫存 Profile 清理完成 ({self.profile_path})")
             except Exception as clean_err:
-                print(f"[ERROR] 清理 Profile 發生例外: {clean_err}")
+                print(f"清理 Profile 發生例外: {clean_err}")
 
         if self.conn:
             try:
                 self.conn.close()
-                print(f"[INFO] Database connection closed")
+                print(f"Database connection closed")
             except:
                 pass
 
     def simulate_human(self):
-        """模擬簡單人為行為"""
+        
         time.sleep(random.uniform(1.0, 2.5))
         for _ in range(random.randint(1, 2)):
             try:
@@ -884,9 +848,9 @@ class Crawler:
             time.sleep(random.uniform(0.3, 1.0))
 
     def extract_summary(self):
-        """擷取 Bing 搜尋結果的第一筆摘要"""
+        
         try:
-            # 1. 顯式等待
+            
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.ID, "b_results"))
             )
@@ -918,7 +882,7 @@ class Crawler:
             return "無法擷取有效摘要"
 
     def get_next_id(self, table_name, id_column_name):
-        """獲取下一個 ID"""
+
         cursor = self.conn.cursor()
         try:
             query = f"SELECT ISNULL(MAX({id_column_name}), 0) + 1 FROM {table_name} WITH (UPDLOCK, SERIALIZABLE)"
@@ -939,7 +903,7 @@ class Crawler:
         keyword_id_map = {}
         
         try:
-            # 1. 取得所有要處理的唯一關鍵字字串
+        
             unique_keywords = list(set([k['keyword'] for k in keywords_data]))
             existing_keywords = {}
             
@@ -959,28 +923,28 @@ class Crawler:
             update_params = []
             updated_kids = set()
             
-            # 3. 記憶體中分配 ID
+            
             for data in keywords_data:
                 kw = data['keyword']
                 cat = data.get('category', 'Other') or 'Other'
                 intent = data.get('search_intent', 'Informational') or 'Informational'
 
                 if kw.lower() in existing_keywords:
-                    # 已存在：準備更新
+                    
                     kid = existing_keywords[kw.lower()]
                     keyword_id_map[kw] = kid
                     if kid not in updated_kids:
                         update_params.append((cat, intent, kid))
                         updated_kids.add(kid)
                 else:
-                    # 不存在：準備新增
+                    
                     if kw not in keyword_id_map:
                         current_max_id += 1
                         kid = current_max_id
                         keyword_id_map[kw] = kid
                         insert_params.append((kid, kw, cat, intent))
             
-            # 4. 批次寫入與更新
+            
             if insert_params:
                 insert_query = "INSERT INTO KeywordsMaster (KeywordID, Keyword, Category, SearchIntent, CreatedAt) VALUES (?, ?, ?, ?, GETDATE())"
                 cursor.executemany(insert_query, insert_params)
@@ -1007,7 +971,7 @@ class Crawler:
             
         cursor = self.conn.cursor()
         try:
-            # 取得目前的 MAX(StatsID)
+            
             cursor.execute("SELECT ISNULL(MAX(StatsID), 0) FROM KeywordRegionStats WITH (UPDLOCK, SERIALIZABLE)")
             current_max_id = int(cursor.fetchone()[0])
             
@@ -1034,7 +998,7 @@ class Crawler:
             if params:
                 cursor.executemany(insert_query, params)
                 self.conn.commit()
-                print(f"[INFO] 成功批次寫入 {len(params)} 筆地區統計資料")
+                print(f"成功批次寫入 {len(params)} 筆地區統計資料")
                 
         except Exception as e:
             debug_print(f"批次插入 KeywordRegionStats 失敗: {e}", "ERROR")
@@ -1067,7 +1031,7 @@ class Crawler:
             cursor.execute(insert_query, insert_params)
             self.conn.commit()
 
-            print(f"[INFO] KeywordsLog inserted - LogID: {next_log_id}")
+            print(f"KeywordsLog inserted - LogID: {next_log_id}")
             return next_log_id
 
         except Exception as e:
@@ -1079,7 +1043,6 @@ class Crawler:
             log_error("keywords_log_errors.log", f"insert_keywords_log error: {e}")
             return None
     def insert_keywords_log_batch(self, scraped_results):
-        """批次寫入搜尋日誌，避免迴圈內頻繁鎖死資料庫"""
         if not scraped_results: return
         cursor = self.conn.cursor()
         try:
@@ -1100,26 +1063,26 @@ class Crawler:
             cursor.executemany(sql_insert, insert_data)
             cursor.execute("COMMIT TRANSACTION")
             self.conn.commit()
-            print(f"[INFO] ✓ 成功批次寫入 {len(insert_data)} 筆搜尋日誌資料")
+            print(f"成功批次寫入 {len(insert_data)} 筆搜尋日誌資料")
         except Exception as e:
             cursor.execute("ROLLBACK TRANSACTION")
             self.conn.rollback()
             debug_print(f"批次寫入搜尋日誌失敗: {e}", "ERROR")
 
     def scrape_single_region(self, region_info):
-        """從單一地區抓取關鍵字 (已修正為 debug_print 以確保紀錄入 log 檔)"""
+        
         region_code = region_info["code"]
         region_name = region_info["name"]
         trends_url = region_info["url"]
 
         debug_print(f"\n{'=' * 60}")
-        debug_print(f"[INFO] Scraping {region_code} ({region_name})")
-        debug_print(f"[INFO] URL: {trends_url}")
+        debug_print(f"Scraping {region_code} ({region_name})")
+        debug_print(f"URL: {trends_url}")
         debug_print(f"{'=' * 60}")
 
         try:
-            # 載入網頁
-            debug_print(f"[DEBUG] Loading page...")
+            
+            debug_print(f"Loading page...")
             retry_with_backoff(lambda: self.driver.get(trends_url))
 
             wait = WebDriverWait(self.driver, 20)
@@ -1131,7 +1094,7 @@ class Crawler:
 
             time.sleep(5)
 
-            # 滾動頁面
+            
             try:
                 self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight/2);")
                 time.sleep(1)
@@ -1162,7 +1125,7 @@ class Crawler:
                     continue
 
             if len(rows) == 0:
-                debug_print(f"[WARNING] 沒有找到表格行", "WARNING")
+                debug_print(f"沒有找到表格行", "WARNING")
                 return []
 
             debug_print(f"成功找到 {len(rows)} 個表格行，開始提取資料...")
@@ -1172,7 +1135,7 @@ class Crawler:
                     keyword = None
                     search_volume_text = None
 
-                    # 提取關鍵字
+                    
                     try:
                         keyword_elem = row.find_element(By.XPATH, ".//div[@class='mZ3RIc']")
                         keyword = keyword_elem.text.strip()
@@ -1186,7 +1149,7 @@ class Crawler:
                     if not keyword:
                         continue
 
-                    # 提取搜尋量
+                    
                     try:
                         vol_elem = row.find_element(By.XPATH, ".//div[@class='p6GQOc']//div[@class='lqv0Cb']")
                         search_volume_text = vol_elem.text.strip()
@@ -1208,7 +1171,7 @@ class Crawler:
 
                     search_volume_number = convert_search_volume_to_number(search_volume_text) if search_volume_text else None
 
-                    # 排除與去重邏輯
+                    
                     exclude_keywords = ['google', 'trends', '搜尋', 'search', '登入', 'login', '探索', '最新熱搜榜']
                     if any(exclude in keyword.lower() for exclude in exclude_keywords):
                         continue
@@ -1267,7 +1230,7 @@ class Crawler:
                     debug_print(f"等待 {wait_time:.1f}s 後繼續下一個地區...", "INFO")
                     time.sleep(wait_time)
 
-            #  檢查整體結果
+            
             print(f"\n{'=' * 80}")
             print(f"抓取結果統計")
             print(f"{'=' * 80}")
@@ -1313,10 +1276,8 @@ class Crawler:
 
             keyword_counter = Counter([item["keyword"] for item in all_keywords_with_info])
 
-            print(f"[INFO] Total appearances: {len(all_keywords_with_info)}")
-            print(f"[INFO] Unique keywords: {len(keyword_region_map)}")
-
-            # AI 分類（含翻譯）
+            print(f"Total appearances: {len(all_keywords_with_info)}")
+            print(f"Unique keywords: {len(keyword_region_map)}")
             print(f"\n{'=' * 80}")
             print(f"Google Gemini AI 自動分類與翻譯關鍵字 (多執行緒加速)")
             print(f"{'=' * 80}")
@@ -1325,7 +1286,7 @@ class Crawler:
             classification_results = {}
 
             if USE_AI_CLASSIFICATION and GEMINI_AVAILABLE and len(all_unique_keywords) > 0:
-                # 切割批次
+                
                 batches = [all_unique_keywords[i:i + AI_BATCH_SIZE] for i in range(0, len(all_unique_keywords), AI_BATCH_SIZE)]
             
                 max_workers = min(5, len(batches))
@@ -1337,13 +1298,13 @@ class Crawler:
                         try:
                             batch_results = future.result()
                             classification_results.update(batch_results)
-                            print(f"[INFO] 批次 {batch_num}/{len(batches)} 分類完成！")
+                            print(f"批次 {batch_num}/{len(batches)} 分類完成！")
                         except Exception as exc:
-                            print(f"[ERROR] 批次 {batch_num} 分類產生例外: {exc}")
+                            print(f"批次 {batch_num} 分類產生例外: {exc}")
             else:
                 classification_results = classify_keywords_batch(all_unique_keywords)
 
-            # 寫入資料庫
+            
             print(f"\n{'=' * 80}")
             print(f"將關鍵字批次寫入資料庫")
             print(f"{'=' * 80}")
@@ -1351,7 +1312,7 @@ class Crawler:
             successfully_inserted = []
             failed_keywords = []
             
-            # 1. 準備批次處理 Keywords 的資料結構
+            
             keywords_batch_data = []
             for original_keyword in keyword_region_map.keys():
                 classification = classification_results.get(original_keyword, 
@@ -1375,10 +1336,10 @@ class Crawler:
                     'english_translation': translated_keyword
                 })
 
-            # 2. 呼叫批次處理函數取得 KeywordID
+            
             keyword_id_map = self.get_or_create_keywords_batch(keywords_batch_data)
             
-            # 3. 準備批次處理 地區統計 的資料結構
+            
             stats_batch_data = []
             for data in keywords_batch_data:
                 original_keyword = data['original_keyword']
@@ -1409,36 +1370,36 @@ class Crawler:
                 else:
                     failed_keywords.append(translated_keyword)
                     
-            # 印出處理狀態
+            
             for idx, data in enumerate(keywords_batch_data, 1):
                 trans_text = f" (原詞: {data['original_keyword']})" if data['keyword'] != data['original_keyword'] else ""
                 print(f"[{idx}/{len(keywords_batch_data)}] '{data['keyword']}'{trans_text} → {data['category']}/{data['search_intent']}")
 
-            # 4. 呼叫批次寫入 地區統計
+            
             self.insert_region_stats_batch(stats_batch_data)
 
-            # 選出英文和中文前 N 名
+            
             print(f"\n{'=' * 80}")
             print(f"選擇搜尋關鍵字（英文前 {TOP_ENGLISH_KEYWORDS} 名 + 中文前 {TOP_CHINESE_KEYWORDS} 名）")
             print(f"{'=' * 80}")
 
-            # 聚合與語言分流邏輯合併
+            
             merged_keywords = {}
             for kw, count in keyword_counter.items():
                 cls_data = classification_results.get(kw, {})
                 is_chinese = any('\u4e00' <= char <= '\u9fff' for char in kw)
                 
-                # (中文保持原樣，外文使用翻譯)
+                
                 final_kw = kw if is_chinese else cls_data.get('english_translation', kw).lower()
                 
                 if final_kw not in merged_keywords:
                     merged_keywords[final_kw] = {'count': 0, 'is_chinese': is_chinese}
                 merged_keywords[final_kw]['count'] += count
 
-            # 依出現次數排序
+            
             sorted_keywords = sorted(merged_keywords.items(), key=lambda x: x[1]['count'], reverse=True)
             
-            # 直接分流，不需再次檢查字元
+            
             english_keywords = []
             chinese_keywords = []
             for kw, data in sorted_keywords:
@@ -1465,11 +1426,11 @@ class Crawler:
             print(f"{'=' * 80}")
 
             print(f"\n{'=' * 80}")
-            print(f"[INFO] Successfully processed: {len(successfully_inserted)} keywords")
-            print(f"[INFO] Failed: {len(failed_keywords)} keywords")
+            print(f"Successfully processed: {len(successfully_inserted)} keywords")
+            print(f"Failed: {len(failed_keywords)} keywords")
 
             if failed_regions:
-                print(f"[WARNING] Failed regions: {', '.join(failed_regions)}")
+                print(f"Failed regions: {', '.join(failed_regions)}")
 
             print(f"{'=' * 80}\n")
 
@@ -1482,7 +1443,7 @@ class Crawler:
             return [], [], {}
 
     def run_keyword_search(self, keyword):
-        """在 Bing 搜尋關鍵字"""
+        
         try:
             retry_with_backoff(lambda: self.driver.get("https://www.bing.com"))
             time.sleep(random.uniform(0.8, 1.5))
@@ -1551,7 +1512,7 @@ def main():
         c.connect_db()
         c.init_driver()
 
-        # 啟動執行監控
+        
         if c.quality_monitor:
             execution_id = c.quality_monitor.start_execution(crawler_version="v1.1.0")
 
@@ -1571,7 +1532,7 @@ def main():
 
             return
 
-        # 更新執行統計
+        
         if c.quality_monitor:
             c.quality_monitor.update_execution(
                 regions_scraped=len(REGIONS),
@@ -1613,7 +1574,7 @@ def main():
 
             searched_count = 0
 
-            scraped_results = []  # 暫存列表
+            scraped_results = []  
             for idx, (keyword, count) in enumerate(top_keywords_to_search, 1):
                 is_chinese = any('\u4e00' <= char <= '\u9fff' for char in keyword)
                 lang = "中文" if is_chinese else "英文"
@@ -1625,7 +1586,6 @@ def main():
                 if kid:
                     try:
                         summary = c.run_keyword_search(keyword)
-                        # 存入暫存列表，不直接寫資料庫
                         scraped_results.append((kid, summary, "Success", None))
                         searched_count += 1
                     except Exception as e:
@@ -1645,7 +1605,7 @@ def main():
         print(f"\n{'=' * 80}")
         print(f"執行完成！")
         print(f"{'=' * 80}\n")
-        print(f"[INFO] 資料庫寫入統計：")
+        print(f"資料庫寫入統計：")
         print(f"  - 地區數: {len(REGIONS)}")
         print(f"  - KeywordsMaster: {len(keywords_with_ids)} 筆")
         print(f"  - KeywordRegionStats: 已記錄各地區統計")
@@ -1655,7 +1615,7 @@ def main():
         print(f"  - 關聯分析: 已完成")
         print(f"\n")
 
-        # 標記執行成功
+        
         if c.quality_monitor:
             c.quality_monitor.update_execution(status='成功')
 

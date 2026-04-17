@@ -84,7 +84,6 @@ def init_driver_for_thread():
     }
     options.add_experimental_option("prefs", prefs)
     
-    # 使用 Thread ID 與時間戳記確保暫存資料夾絕對不重複
     thread_id = threading.get_ident()
     custom_profile = f"/tmp/Chrome_Temp_{thread_id}_{int(time.time())}_{random.randint(10,99)}"
     os.makedirs(custom_profile, exist_ok=True)
@@ -129,16 +128,26 @@ def process_single_keyword(kid, kw):
             except:
                 continue
                 
+        urls = []
+        try:
+            url_elements = driver.find_elements(By.XPATH, "//li[@class='b_algo']//h2/a")
+            for elem in url_elements[:3]:
+                href = elem.get_attribute("href")
+                if href and "http" in href:
+                    urls.append(href)
+        except: pass
+        urls_string = ", ".join(urls) if urls else None
+                
         if summary_text:
             print(f"  [成功] '{kw}': {summary_text[:30]}...")
-            return (kid, summary_text[:150] + "...", "Success", None)
+            return (kid, summary_text[:150] + "...", urls_string, "Success", None)
         else:
             print(f"  [失敗] '{kw}': 找不到內容")
-            return (kid, "", "Fail", "無法擷取有效摘要")
+            return (kid, "", None, "Fail", "無法擷取有效摘要")
             
     except Exception as e:
         print(f"  [異常] '{kw}': 發生錯誤 ({str(e)[:50]})")
-        return (kid, "", "Fail", str(e))
+        return (kid, "", None, "Fail", str(e))
         
     finally:
         if driver:
@@ -166,9 +175,9 @@ def main():
         )
         conn = pyodbc.connect(conn_str, autocommit=False)
         cursor = conn.cursor()
-        print(f"[INFO] 資料庫連線成功")
+        print(f"資料庫連線成功")
     except Exception as e:
-        print(f"[錯誤] 資料庫連線失敗: {e}")
+        print(f"資料庫連線失敗: {e}")
         return
 
     query_missing = """
@@ -185,11 +194,11 @@ def main():
     missing_keywords = cursor.fetchall()
     
     if not missing_keywords:
-        print("[INFO] 沒有需要補抓的關鍵字。")
+        print("沒有需要補抓的關鍵字。")
         conn.close()
         return
         
-    print(f"[INFO] 發現 {len(missing_keywords)} 筆關鍵字，開始多執行緒抓取...")
+    print(f"發現 {len(missing_keywords)} 筆關鍵字，開始多執行緒抓取...")
     scraped_results = []
     success_count = 0
     
@@ -206,23 +215,21 @@ def main():
                         success_count += 1
                 except Exception as exc:
                     print(f"  [系統錯誤] '{kw}' 執行緒崩潰: {exc}")
-                    scraped_results.append((kid, "", "Fail", str(exc)))
+                    scraped_results.append((kid, "", None, "Fail", str(exc)))
                 
                 print(f"[進度] {i}/{len(missing_keywords)} 處理完成。")
                 
-                # 任務間隔，降低被封鎖的機率
                 time.sleep(random.uniform(1.0, 3.0))
 
     except KeyboardInterrupt:
-        print("\n[INFO] 強制中斷，準備寫入已抓取資料...")
+        print("\n強制中斷，準備寫入已抓取資料...")
     finally:
-        # 強制清理所有殘留暫存資料夾
         for temp_dir in glob.glob("/tmp/Chrome_Temp_*"):
             try: shutil.rmtree(temp_dir, ignore_errors=True)
             except: pass
 
         if scraped_results:
-            print(f"\n[INFO] 批次寫入 {len(scraped_results)} 筆資料...")
+            print(f"\n批次寫入 {len(scraped_results)} 筆資料...")
             try:
                 cursor.execute("BEGIN TRANSACTION")
                 cursor.execute("SELECT ISNULL(MAX(LogID), 0) FROM KeywordsLog WITH (UPDLOCK, SERIALIZABLE)")
@@ -230,21 +237,21 @@ def main():
                 
                 insert_data_list = []
                 for res in scraped_results:
-                    kid, summary, status, error_msg = res
-                    current_max_id += 1 
-                    insert_data_list.append((current_max_id, kid, summary, status, error_msg))
+                    kid, summary, urls, status, error_msg = res
+                    current_max_id += 1
+                    insert_data_list.append((current_max_id, kid, summary, urls, status, error_msg))
                 
                 sql_insert = """
                     INSERT INTO KeywordsLog 
-                    (LogID, KeywordID, LogDate, CrawlTime, SummaryText, Status, ErrorMessage, CreatedAt) 
-                    VALUES (?, ?, CAST(GETDATE() AS DATE), GETDATE(), ?, ?, ?, GETDATE())
+                    (LogID, KeywordID, LogDate, CrawlTime, SummaryText, SourceURLs, Status, ErrorMessage, CreatedAt) 
+                    VALUES (?, ?, CAST(GETDATE() AS DATE), GETDATE(), ?, ?, ?, ?, GETDATE())
                 """
                 cursor.executemany(sql_insert, insert_data_list)
                 cursor.execute("COMMIT TRANSACTION")
                 conn.commit()
-                print("[INFO] 寫入成功！")
+                print("寫入成功！")
             except Exception as db_err:
-                print(f"[錯誤] 寫入失敗 Rollback: {db_err}")
+                print(f"寫入失敗 Rollback: {db_err}")
                 cursor.execute("ROLLBACK TRANSACTION")
                 conn.rollback()
         
