@@ -22,7 +22,6 @@ log_formatter = logging.Formatter('%(asctime)s | %(levelname)-8s | %(message)s',
 logger = logging.getLogger('AutoLearner')
 logger.setLevel(logging.INFO)
 
-# 同時輸出到檔案與螢幕
 file_handler = logging.FileHandler(LOG_FILE, encoding='utf-8')
 file_handler.setFormatter(log_formatter)
 logger.addHandler(file_handler)
@@ -92,8 +91,6 @@ def call_ai_for_deep_learning(keywords_list):
     }
 
     headers = {"Content-Type": "application/json"}
-
-    # 1. Vertex AI 優先
     if VERTEX_AI_KEY:
         try:
             url = f"https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash-lite:generateContent?key={VERTEX_AI_KEY}"
@@ -103,7 +100,6 @@ def call_ai_for_deep_learning(keywords_list):
         except Exception as e:
             logger.warning(f"Vertex AI 異常: {e}")
 
-    # 2. 備用金鑰輪替
     for _ in range(len(GEMINI_API_KEYS) * 2):
         key = GEMINI_API_KEYS[CURRENT_API_KEY_INDEX]
         try:
@@ -118,8 +114,7 @@ def call_ai_for_deep_learning(keywords_list):
 
 def run_auto_learner():
     logger.info("="*60 + "\n啟動自動學習模組\n" + "="*60)
-    
-    # 確保規則檔存在
+
     if not os.path.exists(RULES_FILE):
         rules = { 'Technology': [], 'Entertainment': [], 'Sports': [], 'Business': [], 'Politics': [], 'News': [], 'Education': [], 'Lifestyle': [], 'Other': [] }
     else:
@@ -129,7 +124,6 @@ def run_auto_learner():
     conn = connect_db()
     cursor = conn.cursor()
     try:
-        #4: 防呆檢查
         cursor.execute("SELECT COUNT(*) FROM KeywordsMaster WHERE Category = 'Other' OR Category IS NULL")
         total_other = cursor.fetchone()[0]
         logger.info(f"資料庫中共有 {total_other} 個 'Other' 或 'NULL' 詞彙需要學習。")
@@ -138,13 +132,10 @@ def run_auto_learner():
             logger.info("目前沒有需要學習的詞彙。")
             return
 
-        # 抓取待學習的關鍵字
         cursor.execute(f"SELECT TOP {LEARN_BATCH_SIZE} KeywordID, Keyword FROM KeywordsMaster WHERE Category = 'Other' OR Category IS NULL ORDER BY CreatedAt DESC")
         rows = cursor.fetchall()
         keyword_map = {row[1].strip(): row[0] for row in rows}
         all_keywords = list(keyword_map.keys())
-        
-        #5: 導入多執行緒並發處理
         ai_results = {}
         batches = [all_keywords[i:i + AI_BATCH_SIZE] for i in range(0, len(all_keywords), AI_BATCH_SIZE)]
         
@@ -165,12 +156,11 @@ def run_auto_learner():
             clean_kw = kw.strip()
             
             if clean_kw in keyword_map and cat in rules and cat not in ["Unknown", "Other"]:
-                # 更新 JSON 規則檔
+
                 if clean_kw not in rules[cat]:
                     rules[cat].append(clean_kw)
                     updated_count += 1
-                
-                # 準備 DB 更新參數
+
                 db_updates.append((cat, keyword_map[clean_kw]))
 
         if updated_count > 0:
