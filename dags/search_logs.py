@@ -5,11 +5,13 @@ import time
 import random
 import pyodbc
 import os
+import io
 import sys
 import shutil
 import urllib.parse
 import threading
 import glob
+import base64
 from datetime import datetime
 from dotenv import load_dotenv
 from selenium import webdriver
@@ -20,7 +22,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import concurrent.futures
 
 if hasattr(sys.stdout, 'buffer'):
-    import io
+    
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
@@ -56,10 +58,24 @@ sys.stderr = DualLogger(sys.stderr, LOG_FILE)
 SQL_SERVER = 'host.docker.internal' 
 SQL_DATABASE = 'MicrosoftRDB'
 DRIVER_PATH = "/usr/bin/chromedriver"
-MAX_WORKERS = 2 
+MAX_WORKERS = 1 
+
+def clean_bing_url(href):
+    if "bing.com/ck/" in href and "u=" in href:
+        try:
+            u_param = href.split("u=")[1].split("&")[0]
+            b64_str = u_param[2:]
+            b64_str += "=" * ((4 - len(b64_str) % 4) % 4)
+            b64_str = b64_str.replace("-", "+").replace("_", "/")
+            real_url = base64.b64decode(b64_str).decode('utf-8', errors='ignore')
+            if real_url.startswith("http"):
+                return real_url
+        except Exception:
+            pass
+    return href
+
 
 def init_driver_for_thread():
-    """為每個執行緒初始化專屬的輕量化 Chrome"""
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
     options.add_argument("--window-size=1920,1080")
@@ -133,8 +149,10 @@ def process_single_keyword(kid, kw):
             url_elements = driver.find_elements(By.XPATH, "//li[@class='b_algo']//h2/a")
             for elem in url_elements[:3]:
                 href = elem.get_attribute("href")
-                if href and "http" in href:
-                    urls.append(href)
+                if href and href.startswith("http"):
+                    real_url = clean_bing_url(href)
+                    if real_url not in urls:
+                        urls.append(real_url)
         except: pass
         urls_string = ", ".join(urls) if urls else None
                 
@@ -211,7 +229,7 @@ def main():
                 try:
                     result = future.result()
                     scraped_results.append(result)
-                    if result[2] == "Success":
+                    if result[3] == "Success":
                         success_count += 1
                 except Exception as exc:
                     print(f"  [系統錯誤] '{kw}' 執行緒崩潰: {exc}")
