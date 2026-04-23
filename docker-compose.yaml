@@ -7,7 +7,6 @@ x-airflow-common:
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-    # 強制修正 2.10 版本的 XCom 與 Auth 設定
     AIRFLOW__CORE__XCOM_BACKEND: 'airflow.models.xcom.BaseXCom'
     AIRFLOW__CORE__AUTH_MANAGER: 'airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager'
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow

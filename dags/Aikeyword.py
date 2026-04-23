@@ -55,7 +55,6 @@ def connect_db():
     return pyodbc.connect(conn_str, autocommit=False)
 
 def safe_parse_ai_json(raw_response):
-    """深度解析 AI 回傳"""
     try:
         raw_text = raw_response.json()['candidates'][0]['content']['parts'][0]['text']
         clean_json = raw_text.strip().replace('```json', '').replace('```', '').strip()
