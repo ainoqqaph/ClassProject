@@ -2,7 +2,6 @@ FROM apache/airflow:2.10.2
 
 USER root
 
-# 1. 安裝系統依賴 (SQL Server 驅動 & 瀏覽器)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     curl \
@@ -19,7 +18,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 USER airflow
 
-# 2. 一次裝好所有 Python 套件
 RUN pip install --no-cache-dir \
     selenium \
     pyodbc \
